@@ -8,11 +8,16 @@ namespace ProceduralLevelGeneration {
         int levelWidth;
         int levelHeight;
         public int NumberOfRooms;
-        Room[,] level;
-        MyVector2 startingRoom;
+        Room[,] level;//level is represented by a 2D array of rooms
+        MyVector2 startingRoom; //This is a a holding point for the beginning of the map.
         Random randomNumber;
-        public int MaxX, MaxY, MinX, MinY;
+        public int MaxX, MaxY, MinX, MinY; //hold the maximum and minimum of the x and y to track the edges of the map to ensure no empty doors. 
 
+        /// <summary>
+        /// COnstructor for level
+        /// </summary>
+        /// <param name="incommingHeight">Height for the level</param>
+        /// <param name="incommingWidth">Width fort he level</param>
         public Level(int incommingHeight, int incommingWidth) {
             level = new Room[incommingHeight, incommingWidth];
             levelHeight = incommingHeight;
@@ -23,7 +28,10 @@ namespace ProceduralLevelGeneration {
             MinY = 1000;
             startingRoom = new MyVector2(levelWidth / 2, levelHeight / 2);
         }
-
+        /// <summary>
+        /// Generates a level and returns the 2D array for the level 
+        /// </summary>
+        /// <returns>2D array of rooms represneting the level</returns>
         public Room[,] GenerateLevel() {
             NumberOfRooms = 0;
             randomNumber = new Random();
@@ -34,8 +42,13 @@ namespace ProceduralLevelGeneration {
             cleanupEdges();
             return level;
         }
-        //taking the starting point and the previous room if there is one
-        //This method uses drunken walk to generate a level
+        /// <summary>
+        /// Recursive method to generate a level
+        /// </summary>
+        /// <param name="startingPoint">The room to be started from</param>
+        /// <param name="previousPoint">The previous room for seting proper adjacencies</param>
+        /// <param name="commingFrom">The direction it came from</param>
+        /// <returns></returns>
         public Room DrunkWalk(MyVector2 startingPoint, MyVector2 previousPoint, eDirection commingFrom) {
 
             if (startingPoint.x >= levelWidth - 1 || startingPoint.y >= levelHeight - 1) {//return previsou room if new room is out of bounds
@@ -81,7 +94,9 @@ namespace ProceduralLevelGeneration {
             return level[startingPoint.x, startingPoint.y];//deafault point
 
         }
-
+        /// <summary>
+        /// Finds the min and max, used to assist in ensuring no open doors
+        /// </summary>
         private void findMaxAndMin() {
             for (int i = 0; i < levelWidth; i++) {
                 for (int j = 0; j < levelHeight; j++) {
@@ -90,6 +105,7 @@ namespace ProceduralLevelGeneration {
                             MaxX = j;
                         }
                         if (i > MaxY) {
+
                             MaxY = i;
                         }
                         if (i < MinY) {
@@ -102,7 +118,9 @@ namespace ProceduralLevelGeneration {
                 }
             }
         }
-
+        /// <summary>
+        /// Cleans up the outer edges
+        /// </summary>
         private void cleanupEdges() {
             for (int i = 0; i < levelWidth; i++) {
                 for (int j = 0; j < levelHeight; j++) {
@@ -124,6 +142,9 @@ namespace ProceduralLevelGeneration {
                 }
             }
         }
+        /// <summary>
+        /// Function to draw the level to strings, used for debugging
+        /// </summary>
         public void DrawLevel() {
             for (int i = 0; i < levelWidth; i++) {
                 Console.Write("_");

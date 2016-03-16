@@ -14,7 +14,10 @@ public class LevelInterpreter : MonoBehaviour {
     public int LevelHeight, LevelWidth;
     // Use this for initialization
 
-
+    /// <summary>
+    /// Builds the level based on the generated level
+    /// </summary>
+    /// <returns>Retuns a GameObject that holds the whole level</returns>
     public GameObject BuildLevel() {
         floorsInLevel = new Stack();
         newLevel = new Level(LevelHeight, LevelWidth);
@@ -38,6 +41,10 @@ public class LevelInterpreter : MonoBehaviour {
         }
         return FinishedLevel;
     }
+    /// <summary>
+    /// Finds the entry point for the level
+    /// </summary>
+    /// <returns>Gameobject that is the room that is the beginning point of the map</returns>
     public GameObject GetEntryPoint() {
         foreach (Transform room in FinishedLevel.transform ) {
             if (room.name.Contains("Entry")) {
@@ -46,6 +53,10 @@ public class LevelInterpreter : MonoBehaviour {
         }
         return null;
     }
+    /// <summary>
+    /// Finds the exit point fot the map
+    /// </summary>
+    /// <returns>Gameobject that is the room that is the ending point of the map</returns>
     public GameObject GetExitPoint() {
         foreach (Transform room in FinishedLevel.transform) {
             if (room.name.Contains("Exit")) {
@@ -54,6 +65,9 @@ public class LevelInterpreter : MonoBehaviour {
         }
         return null;
     }
+    /// <summary>
+    /// PLaces the floors in the rooms from a stack
+    /// </summary>
     private void placeFloors() {
         GameObject[] floorsToPlace = new GameObject[newLevel.NumberOfRooms];
         floorsToPlace[0] = floors[(int)eFloors.ENTRY];
@@ -77,12 +91,15 @@ public class LevelInterpreter : MonoBehaviour {
             floorsInLevel.Push(floorsToPlace[i]);
         }
     }
-
-    public void buildRoom(Room incommingRoom, GameObject outgoingRoom, int incommingX, int incommingY) {
-        //GameObject[] sides = new GameObject[4];
+    /// <summary>
+    /// Builds a Room by placing the all the walls
+    /// </summary>
+    /// <param name="incommingRoom">The room to be built</param>
+    /// <param name="outgoingRoom">The is the room that is built</param>
+    public void buildRoom(Room incommingRoom, GameObject outgoingRoom) {
 
         for (int i = 0; i < 4; i++) {
-            if (incommingRoom.IsAdjacencyAt((eDirection)i)) {
+            if (incommingRoom.CanAddAdjacency((eDirection)i)) {
                 GameObject tempDoor = Instantiate(Door); ;
                 tempDoor.transform.parent = outgoingRoom.transform;
                 adjustItemByDirection(tempDoor, (eDirection)i);
@@ -94,6 +111,11 @@ public class LevelInterpreter : MonoBehaviour {
             }
         }
     }
+    /// <summary>
+    /// Changes walls based on wether its a door or a wall 
+    /// </summary>
+    /// <param name="wall">Changed wall object</param>
+    /// <param name="direction">The position of the wall in the room</param>
     private void adjustItemByDirection(GameObject wall, eDirection direction) {
         if (direction == eDirection.NORTH) {
             wall.transform.localPosition += new Vector3(0, WallSizeOffset / 2, 0);
@@ -112,7 +134,11 @@ public class LevelInterpreter : MonoBehaviour {
             wall.transform.localRotation = Quaternion.Euler(0, 0, 270);
         }
     }
-
+    /// <summary>
+    /// Shuffles an array
+    /// </summary>
+    /// <typeparam name="T">Array Type</typeparam>
+    /// <param name="array">The array to shuffle</param>
     private static void shuffle<T>(ref T[] array) {
 
         int n = array.Length;
